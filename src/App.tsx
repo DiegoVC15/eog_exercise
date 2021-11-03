@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/Header';
 import Wrapper from './components/Wrapper';
 // import NowWhat from './components/NowWhat';
-import Chart from './Features/Chart/Chart';
+import Select from './Features/Select/Select';
 
 const theme = createTheme({
   palette: {
@@ -76,7 +76,7 @@ const App = () => (
     <CssBaseline />
     <Wrapper>
       <Header />
-      <Chart />
+      <Select />
       <ToastContainer />
     </Wrapper>
   </MuiThemeProvider>
