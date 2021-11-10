@@ -1,4 +1,4 @@
-import React, { useState, FC } from 'react';
+import React, { useState, FC, useEffect } from 'react';
 import { Theme, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -7,13 +7,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
-import {
-  ApolloClient,
-  ApolloProvider,
-  useQuery,
-  gql,
-  InMemoryCache,
-} from '@apollo/client';
+import { useAppSelector, useAppDispatch } from '../../stateManagement/Hooks/hooks';
+import { getMetrics, getRequested } from '../../stateManagement/features/temps/temps';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -26,47 +21,39 @@ const MenuProps = {
   },
 };
 
-const client = new ApolloClient({
-  uri: 'https://react.eogresources.com/graphql',
-  cache: new InMemoryCache(),
-});
-
-const query = gql`
-  query{
-    getMetrics
-  }
-`;
-
-type MetricsDataResponse = {
-  getMetrics: string[];
-};
-
-function getStyles(name: string, personName: readonly string[], theme: Theme) {
+function getStyles(name: string, metricName: readonly string[], theme: Theme) {
   return {
     fontWeight:
-      personName.indexOf(name) === -1
+      metricName.indexOf(name) === -1
         ? theme.typography.fontWeightRegular
         : theme.typography.fontWeightMedium,
   };
 }
 
 const MultipleSelectChip: FC = () => {
-  const theme = useTheme();
-  const [personName, setPersonName] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
 
-  const handleChange = (event: SelectChangeEvent<typeof personName>) => {
+  useEffect(() => {
+    dispatch(getMetrics());
+    // // eslint-disable-next-line
+    // console.log(metricName);
+  }, [dispatch]);
+
+  const theme = useTheme();
+  const metrics = useAppSelector((state) => state.counter.allMetrics);
+  const [metricName, setMetricName] = useState<string[]>([]);
+
+  useEffect(() => {
+    dispatch(getRequested(metricName));
+  }, [metricName]);
+  const handleChange = (event: SelectChangeEvent<typeof metricName>) => {
     const {
       target: { value },
     } = event;
-    setPersonName(
+    setMetricName(
       typeof value === 'string' ? value.split(',') : value,
     );
   };
-
-  const { loading, error, data } = useQuery<MetricsDataResponse>(query);
-  if (loading) return <div>Error</div>;
-  if (error) return <div>Error</div>;
-  if (!data) return <div>Error</div>;
   return (
     <div>
       <FormControl sx={{ m: 1, width: 500 }}>
@@ -75,7 +62,7 @@ const MultipleSelectChip: FC = () => {
           labelId="chip-label"
           id="multiple-chip"
           multiple
-          value={personName}
+          value={metricName}
           onChange={handleChange}
           input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
           renderValue={(selected) => (
@@ -87,11 +74,11 @@ const MultipleSelectChip: FC = () => {
           )}
           MenuProps={MenuProps}
         >
-          {data.getMetrics.map((name) => (
+          {metrics.map((name:string) => (
             <MenuItem
               key={name}
               value={name}
-              style={getStyles(name, personName, theme)}
+              style={getStyles(name, metricName, theme)}
             >
               {name}
             </MenuItem>
@@ -101,8 +88,4 @@ const MultipleSelectChip: FC = () => {
     </div>
   );
 };
-export default () => (
-  <ApolloProvider client={client}>
-    <MultipleSelectChip />
-  </ApolloProvider>
-);
+export default MultipleSelectChip;

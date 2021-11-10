@@ -1,13 +1,14 @@
 import React from 'react';
-import { ToastContainer } from 'react-toastify';
 import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/Header';
 import Wrapper from './components/Wrapper';
 // import NowWhat from './components/NowWhat';
-// import Select from './Features/Select/Select';
-import CurrentWrapper from './Features/Current/CurrentWrapper';
+import MultipleSelectChip from './features/Select/Select';
+import Chart from './features/Chart/Chart';
+import CurrentWrapper from './features/Current/CurrentWrapper';
+// import Counter from './features/Counter';
 
 const theme = createTheme({
   palette: {
@@ -28,8 +29,9 @@ const App = () => (
     <CssBaseline />
     <Wrapper>
       <Header />
+      <MultipleSelectChip />
+      <Chart />
       <CurrentWrapper />
-      <ToastContainer />
     </Wrapper>
   </MuiThemeProvider>
 );
