@@ -12,8 +12,9 @@ import { useAppSelector } from '../../stateManagement/Hooks/hooks';
 
 const Chart:FC = () => {
   const data = useAppSelector((state) => state.counter.dataChart);
-  // const colors = Array.from({ length: 8 }, ()
-  // => `#${Math.floor(Math.random() * 16777215).toString(16)}`);
+  const colors:{ [key:string]:string } = {
+    OilTemp: '#641e16', waterTemp: '#4a235a', injValveOPen: ' #154360', flareTemp: ' #0e6251', tubingPressure: '#7d6608', casingPressure: '#17202a',
+  };
   if (data.length === 0) return <></>;
   const listTemps = data[0].measurements.map(
     ({ metric, at, value }) => ({ name: at, [metric]: value }),
@@ -29,8 +30,8 @@ const Chart:FC = () => {
   }
   return (
     <LineChart
-      width={1900}
-      height={500}
+      width={1700}
+      height={600}
       data={listTemps}
       margin={{
         top: 10,
@@ -58,10 +59,11 @@ const Chart:FC = () => {
       <Legend />
       {data.map(element => (
         <Line
+          key={element.metric}
           type="basis"
           dataKey={`${element.metric}`}
           dot={false}
-          stroke={element.color}
+          stroke={colors[element.metric]}
         />
       ))}
     </LineChart>
