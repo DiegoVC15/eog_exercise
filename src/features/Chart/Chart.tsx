@@ -35,7 +35,7 @@ const Chart:FC = () => {
       data={listTemps}
       margin={{
         top: 10,
-        right: 30,
+        right: 31,
         left: 20,
         bottom: 5,
       }}
