@@ -12,22 +12,25 @@ import { useAppSelector } from '../../stateManagement/Hooks/hooks';
 
 const Chart:FC = () => {
   const data = useAppSelector((state) => state.counter.dataChart);
-  if (data.length === 0) return <div>Error</div>;
+  // const colors = Array.from({ length: 8 }, ()
+  // => `#${Math.floor(Math.random() * 16777215).toString(16)}`);
+  if (data.length === 0) return <></>;
   const listTemps = data[0].measurements.map(
     ({ metric, at, value }) => ({ name: at, [metric]: value }),
   );
   for (let i = 1; i < data.length; i += 1) {
     const { measurements } = data[i];
     measurements.reduce((acc, cur, idx) => {
-      const { metric, value } = cur;
+      const { metric, value, at } = cur;
+      if (!acc[idx]) acc[idx] = { name: at };
       acc[idx][metric] = value;
       return acc;
     }, listTemps);
   }
   return (
     <LineChart
-      width={1000}
-      height={300}
+      width={1900}
+      height={500}
       data={listTemps}
       margin={{
         top: 10,
@@ -42,7 +45,7 @@ const Chart:FC = () => {
           const dt = new Date(props.name); return `${dt.getHours()}:${dt.getMinutes() < 10
             ? `0${dt.getMinutes()}` : dt.getMinutes()}`;
         }}
-        interval={600}
+        interval={250}
       />
       <YAxis />
       <Tooltip labelFormatter={(_label, payload) => {
@@ -58,7 +61,7 @@ const Chart:FC = () => {
           type="basis"
           dataKey={`${element.metric}`}
           dot={false}
-          // stroke={`#${Math.floor(Math.random() * 16777215).toString(16)}`}
+          stroke={element.color}
         />
       ))}
     </LineChart>

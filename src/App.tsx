@@ -1,5 +1,6 @@
 import React from 'react';
 import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/Header';
@@ -29,9 +30,27 @@ const App = () => (
     <CssBaseline />
     <Wrapper>
       <Header />
-      <MultipleSelectChip />
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginLeft: '50px',
+        marginRight: '50px',
+      }}
+      >
+        <Box sx={{
+          display: 'flex',
+          width: '60%',
+          flexDirection: 'row',
+          justifyContent: 'space-evenly',
+          flexWrap: 'wrap',
+        }}
+        >
+          <CurrentWrapper />
+        </Box>
+        <MultipleSelectChip />
+      </Box>
       <Chart />
-      <CurrentWrapper />
     </Wrapper>
   </MuiThemeProvider>
 );

@@ -9,7 +9,8 @@ interface Measurement {
 }
 interface Measurements {
   metric:string,
-  measurements:Measurement[]
+  measurements:Measurement[],
+  color?:string
 }
 interface MeasurementState {
   allMetrics:string[],
@@ -46,7 +47,11 @@ export const measurementSlice = createSlice({
       ));
     },
     setDataChart: (state, action: PayloadAction<Measurements[]>) => {
-      state.dataChart = action.payload;
+      state.dataChart = action.payload.map((measurement) => ({
+        ...measurement,
+        color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+      }
+      ));
     },
     setSubscription: (state, action: PayloadAction<ZenObservable.Subscription> | null) => {
       state.subscription = action ? action.payload : null;

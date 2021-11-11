@@ -9,7 +9,7 @@ const store = configureStore({
   reducer: {
     counter: measurement,
   },
-  middleware: [...getDefaultMiddleware({ thunk: false }), sagaMiddleware],
+  middleware: [...getDefaultMiddleware({ thunk: false, serializableCheck: false }), sagaMiddleware],
 });
 
 sagaMiddleware.run(rootSaga);

@@ -10,7 +10,7 @@ type Metric = {
 };
 
 const Current: FC<Metric> = ({ metricName, value }) => (
-  <Box sx={{ maxWidth: 275 }}>
+  <Box sx={{ width: 275 }}>
     <Card variant="outlined">
       <CardContent>
         <Typography variant="h5" component="div">
