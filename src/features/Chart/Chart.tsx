@@ -12,27 +12,16 @@ import { useAppSelector } from '../../stateManagement/Hooks/hooks';
 
 const Chart:FC = () => {
   const data = useAppSelector((state) => state.counter.dataChart);
+  const requested = useAppSelector((state) => state.counter.requested);
   const colors:{ [key:string]:string } = {
     OilTemp: '#641e16', waterTemp: '#4a235a', injValveOPen: ' #154360', flareTemp: ' #0e6251', tubingPressure: '#7d6608', casingPressure: '#17202a',
   };
-  if (data.length === 0) return <></>;
-  const listTemps = data[0].measurements.map(
-    ({ metric, at, value }) => ({ name: at, [metric]: value }),
-  );
-  for (let i = 1; i < data.length; i += 1) {
-    const { measurements } = data[i];
-    measurements.reduce((acc, cur, idx) => {
-      const { metric, value, at } = cur;
-      if (!acc[idx]) acc[idx] = { name: at };
-      acc[idx][metric] = value;
-      return acc;
-    }, listTemps);
-  }
+  if (requested.length === 0) return <></>;
   return (
     <LineChart
       width={1700}
       height={600}
-      data={listTemps}
+      data={data}
       margin={{
         top: 10,
         right: 31,
@@ -57,13 +46,13 @@ const Chart:FC = () => {
       }}
       />
       <Legend />
-      {data.map(element => (
+      {requested.map(metric => (
         <Line
-          key={element.metric}
+          key={metric}
           type="basis"
-          dataKey={`${element.metric}`}
+          dataKey={`${metric}`}
           dot={false}
-          stroke={colors[element.metric]}
+          stroke={colors[metric]}
         />
       ))}
     </LineChart>

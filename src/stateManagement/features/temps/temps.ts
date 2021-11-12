@@ -1,24 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-// Define a type for the slice state
-interface Measurement {
-  metric: string,
-  at: Date,
-  value: number,
-  unit: string,
-}
-interface Measurements {
-  metric:string,
-  measurements:Measurement[]
-}
-interface MeasurementState {
-  allMetrics:string[],
-  requested:string[],
-  dataChart:Measurements[],
-  actual: Measurement[],
-  heartBeat:number,
-  subscription: ZenObservable.Subscription | null
-}
+import { Measurement, Chart, MeasurementState } from '../../../interfaces/interfaces';
 
 // Define the initial state using that type
 const initialState: MeasurementState = {
@@ -29,7 +10,6 @@ const initialState: MeasurementState = {
   heartBeat: 0,
   subscription: null,
 };
-// `#${Math.floor(Math.random() * 16777215).toString(16)}`
 
 export const measurementSlice = createSlice({
   name: 'measurement',
@@ -38,16 +18,16 @@ export const measurementSlice = createSlice({
   reducers: {
     getMetrics: () => {},
     setMetrics: (state, action: PayloadAction<string[]>) => {
-      state.allMetrics = action.payload;
+      state.allMetrics = [...action.payload];
     },
     getRequested: (state, action: PayloadAction<string[]>) => {
-      state.requested = action.payload;
+      state.requested = [...action.payload];
       state.actual = state.actual.filter((element) => action.payload.some(
         (value) => value === element.metric,
       ));
     },
-    setDataChart: (state, action: PayloadAction<Measurements[]>) => {
-      state.dataChart = action.payload;
+    setDataChart: (state, action: PayloadAction<Chart[]>) => {
+      state.dataChart = [...action.payload];
     },
     setSubscription: (state, action: PayloadAction<ZenObservable.Subscription> | null) => {
       state.subscription = action ? action.payload : null;
@@ -60,14 +40,34 @@ export const measurementSlice = createSlice({
       if (isInActual) {
         const element = state.actual.find((value) => value.metric === action.payload.metric);
         if (element) element.value = action.payload.value;
-        else state.actual = [...state.actual, action.payload];
-        const historical = state.dataChart.find(metric => metric.metric === action.payload.metric);
-        historical?.measurements.push(action.payload);
+        else state.actual.push(action.payload);
+      }
+    },
+    updateChart: (state, action: PayloadAction<Measurement>) => {
+      const isInActual = state.requested.some((element) => element === action.payload.metric);
+      if (isInActual) {
+        const last = state.dataChart[state.dataChart.length - 1]?.name;
+        const existInChart = last === action.payload.at;
+        if (existInChart) {
+          state.dataChart[state.dataChart.length - 1][action.payload.metric] = action.payload.value;
+        } else {
+          state.dataChart.push({
+            name: action.payload.at,
+            [action.payload.metric]: action.payload.value,
+          });
+        }
       }
     },
   },
 });
 export const {
-  getMetrics, setMetrics, getRequested, setDataChart, setSubscription, unSubscription, setActual,
+  getMetrics,
+  setMetrics,
+  getRequested,
+  setDataChart,
+  setSubscription,
+  unSubscription,
+  setActual,
+  updateChart,
 } = measurementSlice.actions;
 export default measurementSlice.reducer;

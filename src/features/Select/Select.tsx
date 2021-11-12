@@ -1,4 +1,6 @@
-import React, { useState, FC, useEffect } from 'react';
+import React, {
+  useState, FC, useEffect, useCallback,
+} from 'react';
 import { Theme, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -35,8 +37,6 @@ const MultipleSelectChip: FC = () => {
 
   useEffect(() => {
     dispatch(getMetrics());
-    // // eslint-disable-next-line
-    // console.log(metricName);
   }, [dispatch]);
 
   const theme = useTheme();
@@ -46,14 +46,15 @@ const MultipleSelectChip: FC = () => {
   useEffect(() => {
     dispatch(getRequested(metricName));
   }, [metricName]);
-  const handleChange = (event: SelectChangeEvent<typeof metricName>) => {
+
+  const handleChange = useCallback((event: SelectChangeEvent<typeof metricName>) => {
     const {
       target: { value },
     } = event;
     setMetricName(
       typeof value === 'string' ? value.split(',') : value,
     );
-  };
+  }, []);
   return (
     <div>
       <FormControl sx={{ m: 1, width: 500 }}>
